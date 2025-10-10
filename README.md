@@ -1,14 +1,14 @@
-# cloud-platform-terraform-template
+# cloud-platform-terraform-cilium
 
 [![Releases](https://img.shields.io/github/v/release/ministryofjustice/cloud-platform-terraform-template.svg)](https://github.com/ministryofjustice/cloud-platform-terraform-template/releases)
 
-This Terraform module will _create a Cilium installation_ for use on the Cloud Platform.
+This Terraform module will create a [Cilium](https://cilium.io/) installation for use on the Cloud Platform.
 
 
 ## Usage
 
 ```hcl
-module "template" {
+module "cilium" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-cilium?ref=version" # use the latest release
 
   # Configuration
@@ -63,7 +63,30 @@ Port forward and launch browser with:
 ```
 cilium hubble ui -n cilium 
 ```
+## Observations...
 
+- `ciliumendpoint` CRDs are created for each pod at scheduling time. To get all pods in line with cilium on a test cluster, you can rollout restart all deployments/statefulsets/daemonsets.
+
+- If you don't do the above, then vanilla `NetworkPolicy` configuruations, for example, the default ones we use in env repo, will not function:
+
+```
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-controllers
+  namespace: blah
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          component: ingress-controllers
+```
+
+If cilium is deployed post cluster install, the above NWP won't work until all interacting pods have been restarted (so ingress controllers and namespace target pods).
 
 
 <!-- BEGIN_TF_DOCS -->
