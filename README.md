@@ -2,29 +2,69 @@
 
 [![Releases](https://img.shields.io/github/v/release/ministryofjustice/cloud-platform-terraform-template.svg)](https://github.com/ministryofjustice/cloud-platform-terraform-template/releases)
 
-This Terraform module will _create a ..._ for use on the Cloud Platform.
+This Terraform module will _create a Cilium installation_ for use on the Cloud Platform.
+
 
 ## Usage
 
 ```hcl
 module "template" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-template?ref=version" # use the latest release
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cilium?ref=version" # use the latest release
 
   # Configuration
   # ...
-
-  # Tags
-  business_unit          = var.business_unit
-  application            = var.application
-  is_production          = var.is_production
-  team_name              = var.team_name
-  namespace              = var.namespace
-  environment_name       = var.environment
-  infrastructure_support = var.infrastructure_support
 }
 ```
 
 See the [examples/](examples/) folder for more information.
+
+## Notes
+
+- This module is a WIP, we are testing out switching over from Calico to Cilium as a replacement Network Policy provider for the Cloud Platform.
+
+- Installing into `cilium` nanespace; the Helm operator will also create a `cilium-secrets` namespace. For this reason, plus permissions required, some Gatekeeper namespace exceptions are required.
+
+- `cilium-cli` : by default the CLI looks in `kube-system` namespace. We need to specify `-n cilium` when using it.
+
+## Enabling Hubble
+
+To enable Hubble and UI on your test cluster:
+
+```
+cilium hubble enable --ui -n cilium
+```
+
+and verify:
+
+```
+❯ cilium status -n cilium
+    /¯¯\
+ /¯¯\__/¯¯\    Cilium:             OK
+ \__/¯¯\__/    Operator:           OK
+ /¯¯\__/¯¯\    Envoy DaemonSet:    OK
+ \__/¯¯\__/    Hubble Relay:       OK
+    \__/       ClusterMesh:        disabled
+
+DaemonSet              cilium                   Desired: 6, Ready: 6/6, Available: 6/6
+DaemonSet              cilium-envoy             Desired: 6, Ready: 6/6, Available: 6/6
+Deployment             cilium-operator          Desired: 2, Ready: 2/2, Available: 2/2
+Deployment             hubble-relay             Desired: 1, Ready: 1/1, Available: 1/1
+Deployment             hubble-ui                Desired: 1, Ready: 1/1, Available: 1/1
+Containers:            cilium                   Running: 6
+                       cilium-envoy             Running: 6
+                       cilium-operator          Running: 2
+                       clustermesh-apiserver
+                       hubble-relay             Running: 1
+                       hubble-ui                Running: 1
+```
+
+Port forward and launch browser with:
+
+```
+cilium hubble ui -n cilium 
+```
+
+
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
