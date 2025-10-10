@@ -3,6 +3,12 @@
 # Cilium #
 ##########
 
+# The below CiliumClusterwideNetworkPolicy resource is a split yaml doc to create a pair of global policies to replicate
+# the default behaviour of Calico in the Cloud Platform:
+#
+# - Deny all egress to the IMDS IP (169.254. 169.254) from non-system namespaces.
+# - Allow all other pod/namespace egress to the internet
+
 resource "kubectl_manifest" "cilium_clusterwide_policies" {
   yaml_body = <<YAML
 apiVersion: cilium.io/v2
