@@ -6,58 +6,20 @@
 # The below CiliumClusterwideNetworkPolicy resource is a split yaml doc to create a pair of global policies to replicate
 # the default behaviour of Calico in the Cloud Platform:
 #
-# - Deny all egress to the IMDS IP (169.254. 169.254) from non-system namespaces.
+# - Deny all egress to the IMDS IP (169.254.169.254) from non-system namespaces.
 # - Allow all other pod/namespace egress to the internet
 
+data "kubectl_path_documents" "policies" {
+  pattern = "${path.module}/manifests/*.yaml"
+}
+
 resource "kubectl_manifest" "cilium_clusterwide_policies" {
-  yaml_body = <<YAML
-apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
-metadata:
-  name: deny-imds-non-system
-spec:
-  endpointSelector:
-    matchExpressions:
-      - key: "k8s:io.kubernetes.pod.namespace"
-        operator: NotIn
-        values:
-          - cert-manager
-          - ingress-controllers
-          - kube-system
-          - logging
-          - monitoring
-          - velero
-  egressDeny:
-    - toCIDR:
-        - 169.254.169.254/32
-      toPorts:
-        - ports:
-            - port: "80"
-              protocol: TCP
-            - port: "443"
-              protocol: TCP
-  enableDefaultDeny:
-    egress: false
-    ingress: false
----
-apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
-metadata:
-  name: allow-all-egress-internet
-spec:
-  endpointSelector: {}
-  egress:
-    - toCIDR:
-        - 0.0.0.0/0
-  enableDefaultDeny:
-    egress: false
-    ingress: false
-YAML
+  for_each  = data.kubectl_path_documents.policies.manifests
+  yaml_body = each.value
 
   depends_on = [
     helm_release.cilium
   ]
-
 }
 
 resource "kubernetes_namespace" "cilium" {
