@@ -72,13 +72,17 @@ resource "helm_release" "cilium" {
     {
       name  = "routingMode"
       value = "native"
-    }
+    },
     {
       name  = "nodeSelector.network"
       value = "cilium"
     },
     {
       name  = "envoy.nodeSelector.network"
+      value = "cilium"
+    },
+    {
+      name  = "operator.nodeSelector.network"
       value = "cilium"
     }
   ]
