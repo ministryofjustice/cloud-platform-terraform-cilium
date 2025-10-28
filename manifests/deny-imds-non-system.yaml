@@ -14,6 +14,7 @@ spec:
           - logging
           - monitoring
           - velero
+          - smoketest-imds-allow
   egressDeny:
     - toCIDR:
         - 169.254.169.254/32
