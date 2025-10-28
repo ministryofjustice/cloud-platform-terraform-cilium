@@ -14,7 +14,8 @@ data "kubectl_path_documents" "policies" {
 }
 
 resource "kubectl_manifest" "cilium_clusterwide_policies" {
-  for_each  = data.kubectl_path_documents.policies.manifests
+  count     = var.enable_clusterwide_policies ? 1 : 0
+  for_each  = var.enable_clusterwide_policies ? data.kubectl_path_documents.policies.manifests : {}
   yaml_body = each.value
 
   depends_on = [
@@ -71,6 +72,14 @@ resource "helm_release" "cilium" {
     {
       name  = "routingMode"
       value = "native"
+    }
+    {
+      name  = "nodeSelector.network"
+      value = "cilium"
+    },
+    {
+      name  = "envoy.nodeSelector.network"
+      value = "cilium"
     }
   ]
 
