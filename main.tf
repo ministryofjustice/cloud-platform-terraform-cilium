@@ -52,7 +52,7 @@ resource "helm_release" "cilium" {
   repository = "https://helm.cilium.io/"
   namespace  = "cilium"
   timeout    = 300
-  version    = "1.17.5"
+  version    = "1.18.4"
   skip_crds  = true
 
   set = [
