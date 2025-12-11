@@ -20,9 +20,9 @@ See the [examples/](examples/) folder for more information.
 
 ## Notes
 
-- This module is a WIP, we are testing out switching over from Calico to Cilium as a replacement Network Policy provider for the Cloud Platform.
+- This module is the designated component for NetworkPolicy enforcement on Cloud Platform CP30. [Calico](https://github.com/ministryofjustice/cloud-platform-terraform-tigera-calico) is now considered legacy Cloud Platform and will not be supported on new Cloud Platform clusters.
 
-- Installing into `cilium` nanespace; the Helm operator will also create a `cilium-secrets` namespace. For this reason, plus permissions required, some Gatekeeper namespace exceptions are required.
+- Installing into `cilium` namespace; the Helm operator will also create a `cilium-secrets` namespace. For this reason, plus permissions required, some Gatekeeper namespace exceptions are required.
 
 - `cilium-cli` : by default the CLI looks in `kube-system` namespace. We need to specify `-n cilium` when using it.
 
