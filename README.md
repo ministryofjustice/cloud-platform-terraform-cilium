@@ -1,6 +1,6 @@
 # cloud-platform-terraform-cilium
 
-[![Releases](https://img.shields.io/github/v/release/ministryofjustice/cloud-platform-terraform-template.svg)](https://github.com/ministryofjustice/cloud-platform-terraform-template/releases)
+[![Releases](https://img.shields.io/github/v/release/ministryofjustice/cloud-platform-terraform-cilium.svg)](https://github.com/ministryofjustice/cloud-platform-terraform-cilium/releases)
 
 This Terraform module will create a [Cilium](https://cilium.io/) installation for use on the Cloud Platform.
 
